@@ -1,3 +1,5 @@
+import { Product } from "@/domain/entities/product.entity";
+
 // CartItem
 export type CartItemId = UniqueNumberId;
 export type CartItemProduct = UniqueNumberId;
@@ -10,16 +12,20 @@ export type CartProducts = CartItem[];
 
 export type CartItem = {
   id: CartItemId;
-  product: CartItemProduct;
+  cartId: CartId;
+  product: Product;
   quantity: CartItemQuantity;
+  createdAt: DateTimeString;
 };
 
 export type Cart = {
   id: CartId;
-  user: CartUser;
-  products: CartProducts;
+  userId: CartUser;
+  items: CartProducts;
 };
 
-export function containsProduct(cart: Cart, productId: CartItemProduct) {
-  return cart.products.some((item) => item.product === productId);
+export function getCartTotalPrice(cart: Cart): number {
+  return cart.items.reduce((acc, item) => {
+    return acc + item.product.price * item.quantity;
+  }, 0);
 }
