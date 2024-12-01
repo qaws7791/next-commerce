@@ -1,11 +1,13 @@
-export type UserId = number;
+export type UserId = UniqueNumberId;
 export type UserName = string;
 export type UserEmail = string;
 export type UserRole = "admin" | "user";
+export type UserCartId = UniqueNumberId;
 
 export type User = {
   id: UserId;
-  name: UserName;
+  username: UserName;
   email: UserEmail;
   role: UserRole;
+  cartId: UserCartId;
 };
