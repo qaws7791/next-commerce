@@ -1,4 +1,5 @@
 import { AuthRepository } from "@/application/ports/auth.repository";
+import { User } from "@/domain/entities/user.entity";
 import httpClient from "@/infrastructure/api/http-client";
 
 export class AuthApi implements AuthRepository {
@@ -29,6 +30,10 @@ export class AuthApi implements AuthRepository {
         json: { email, password, username },
       })
       .json();
+  }
+
+  async getMe(): Promise<User> {
+    return httpClient.get<User>("auth/me").json();
   }
 }
 
