@@ -40,111 +40,33 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 - (https://dev.to/bespoyasov/clean-architecture-on-frontend-4311)[https://dev.to/bespoyasov/clean-architecture-on-frontend-4311]
 - (https://profy.dev/article/react-architecture-api-client)[https://profy.dev/article/react-architecture-api-client]
 
-- [ ] 모든 사용자는 로그인, 로그아웃할 수 있다.
-- [ ] 관리자 기능은 관리자만 접근할 수 있다.
-- [ ] 관리자는 카테고리를 추가, 업데이트, 삭제할 수 있다.
-- [ ] 관리자는 상품을 추가, 업데이트, 삭제할 수 있다.
-- [ ] 사용자는 상품을 카트에 추가, 업데이트, 삭제할 수 있다.
-- [ ] 사용자는 상품을 바로 구매하거나 카트에 담긴 상품의 일부 또는 전체를 구매할 수 있다.
-- [ ] 상품 주문 시 결제는 stripe를 사용하여 결제한다.
-- [ ] 결제가 완료되어 주문이 끝나면 사용자 이메일로 주문 정보를 보낸다.
-- [ ] 구매한 상품에 대해서는 장바구니에서 삭제되어야 한다.
+## Architecture
 
-```mermaid
-classDiagram
-    %% 사용자 관련 도메인
-    class User {
-        +int id
-        +string name
-        +string email
-        +string password
-        +bool isAdmin
-        +login()
-        +logout()
-    }
+Presentation(Web) -> Application(UseCase) -> Domain(Entity) -> Infrastructure(Repository)
 
-    %% 상품 관리 관련 도메인
-    class Product {
-        +int id
-        +string name
-        +string description
-        +float price
-        +int stock
-        +int categoryId
-        +addStock(int quantity)
-        +reduceStock(int quantity)
-        +updateDetails(string name, string description, float price)
-    }
+### 1. Presentation(Web) 레이어
 
-    class Category {
-        +int id
-        +string name
-        +string description
-        +addCategory(string name, string description)
-        +updateCategory(string name, string description)
-        +deleteCategory()
-    }
+프레젠테이션 레이어는 사용자와 상호작용하는 방법을 정의한다. 주요 구성 요소는 다음과 같다.
 
-    %% 주문 및 결제 관련 도메인
-    class Cart {
-        +int id
-        +int userId
-        +List~CartItem~ items
-        +addProduct(Product product, int quantity)
-        +removeProduct(Product product)
-        +float calculateTotal()
-        +checkout(List~CartItem~ items, Payment payment)
-    }
+- 컴포넌트: UI를 정의
+- 페이지: 라우팅을 정의
+- 라우터: 페이지 간의 이동을 정의
+- 상태 관리: 클라이언트 측에서 상태를 관리
 
-    class CartItem {
-        +int id
-        +int productId
-        +int quantity
-        +float getTotalPrice()
-    }
+### 2. Application 레이어
 
-    class Order {
-        +int id
-        +int userId
-        +List~OrderItem~ items
-        +string status
-        +Payment payment
-        +createOrder(List~CartItem~ items)
-        +completeOrder()
-    }
+애플리케이션 레이어는 애플리케이션의 비즈니스 로직을 정의한다. 주요 구성 요소는 다음과 같다.
 
-    class OrderItem {
-        +int id
-        +int productId
-        +int quantity
-        +float getTotalPrice()
-    }
+- 유스케이스: 애플리케이션의 비즈니스 로직을 정의
 
-    class Payment {
-        +int id
-        +string paymentProvider
-        +string paymentStatus
-        +float amount
-        +initiatePayment()
-        +confirmPayment()
-    }
+### 3.Domain 레이어
 
-    %% 이메일 관련 도메인
-    class EmailService {
-        +sendOrderConfirmation(string email, Order order)
-    }
+엔티티는 애플리케이션에서 사용되는 데이터의 구조를 정의한다. 주요 구성 요소는 다음과 같다.
 
-    %% 관계
-    User "1" --> "*" Cart : owns
-    Cart "1" --> "*" CartItem : contains
-    CartItem "1" --> "1" Product : references
-    User "1" --> "*" Order : places
-    Order "1" --> "*" OrderItem : contains
-    OrderItem "1" --> "1" Product : references
-    Order "1" --> "1" Payment : includes
-    Order "1" --> "1" EmailService : notifies
-    Product "1" --> "*" Category : belongs to
-    User "1" --> "*" Category : manages [Admin only]
-    User "1" --> "*" Product : manages [Admin only]
+- 엔티티: 데이터의 구조를 정의
 
-```
+### 4. Infrastructure 레이어
+
+인프라스트럭처 레이어는 애플리케이션의 데이터를 저장하고 관리하는 방법을 정의한다. 주요 구성 요소는 다음과 같다.
+
+- 리포지토리: 데이터를 저장하고 관리하는 방법을 정의(예: 데이터베이스, API, 파일 시스템 등)
